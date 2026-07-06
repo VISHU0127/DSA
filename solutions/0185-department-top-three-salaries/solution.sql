@@ -1,4 +1,5 @@
 # Write your MySQL query statement below
+# Write your MySQL query statement below
 select d.name as department,
     e1.name as Employee,
     e1.salary as salary
