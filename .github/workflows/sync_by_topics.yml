@@ -1,0 +1,34 @@
+name: Topic-Based LeetCode Sync
+
+on:
+  workflow_dispatch: # Allows manual triggers
+  schedule:
+    - cron: '0 0 * * *' # Triggers automatically every midnight
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo code
+        uses: actions/checkout@v4
+
+      - name: Install Python environment
+        uses: actions/setup-python@v5
+        with:
+          python-python: '3.x'
+
+      - name: Install Network Dependencies
+        run: pip install requests
+
+      - name: Run Scraping Script
+        env:
+          LEETCODE_SESSION: ${{ secrets.LEETCODE_SESSION }}
+          LEETCODE_CSRF_TOKEN: ${{ secrets.LEETCODE_CSRF_TOKEN }}
+        run: python leetcode_topic_sync.py
+
+      - name: Commit and Push Sorted Folders
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add Topics/
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Automated sync: categorized solutions by topic" && git push)
